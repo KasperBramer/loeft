@@ -1,0 +1,894 @@
+<!-- Løft — personlig træningslog. Enkelt-fil, hostes fx på GitHub Pages. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Løft — træningslog</title>
+<meta name="theme-color" content="#FBFAF7">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Løft">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBFAF7;
+    --surface:#FFFFFF;
+    --ink:#17191F;
+    --muted:#7A7F8B;
+    --line:#EAE7E0;
+    --accent:#F0532B;
+    --accent-soft:rgba(240,83,43,.10);
+    --good:#1E8A5B;
+    --blue:#2B5F75;
+    --shadow:0 1px 2px rgba(23,25,31,.04), 0 8px 24px rgba(23,25,31,.05);
+    --display:'Space Grotesk',system-ui,sans-serif;
+    --mono:'Space Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:var(--display);
+    font-size:16px;line-height:1.4;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    max-width:460px;margin:0 auto;min-height:100vh;
+    background:var(--bg);position:relative;
+    padding-bottom:88px;
+  }
+  /* ---- header ---- */
+  header{
+    padding:22px 20px 8px;
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 2px;
+  }
+  h1{font-size:28px;font-weight:700;margin:0;letter-spacing:-.02em}
+  .date-pill{
+    display:inline-flex;align-items:center;gap:6px;margin-top:10px;
+    font-family:var(--mono);font-size:12px;color:var(--muted);
+    background:var(--surface);border:1px solid var(--line);
+    padding:5px 10px;border-radius:100px;
+  }
+  main{padding:8px 20px 20px}
+  /* ---- cards ---- */
+  .card{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:16px;box-shadow:var(--shadow);
+    padding:16px;margin-bottom:14px;
+  }
+  .card-lead{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+  .card-title{font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  /* big stat */
+  .stat-row{display:flex;gap:12px}
+  .stat{flex:1}
+  .stat .big{font-family:var(--mono);font-size:30px;font-weight:700;line-height:1;letter-spacing:-.02em}
+  .stat .lbl{font-size:12px;color:var(--muted);margin-top:6px}
+  .stat .delta{font-family:var(--mono);font-size:12px;margin-top:4px}
+  .delta.up{color:var(--good)}.delta.down{color:var(--accent)}
+  /* ---- buttons ---- */
+  button{font-family:var(--display);cursor:pointer;border:none}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    background:var(--ink);color:#fff;font-weight:600;font-size:15px;
+    padding:12px 16px;border-radius:12px;width:100%;
+    transition:transform .08s ease;
+  }
+  .btn:active{transform:scale(.98)}
+  .btn.accent{background:var(--accent)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn.sm{width:auto;padding:8px 12px;font-size:13px;border-radius:10px}
+  .icon-btn{
+    background:transparent;color:var(--muted);width:32px;height:32px;
+    border-radius:8px;font-size:18px;display:grid;place-items:center;
+  }
+  .icon-btn:active{background:var(--accent-soft);color:var(--accent)}
+  /* ---- inputs ---- */
+  label.field{display:block;margin-bottom:12px}
+  label.field .k{font-size:12px;color:var(--muted);margin-bottom:5px;display:block}
+  input,select{
+    font-family:var(--mono);font-size:16px;width:100%;
+    padding:11px 12px;border:1px solid var(--line);border-radius:11px;
+    background:var(--bg);color:var(--ink);
+  }
+  input:focus,select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+  input[type=text]{font-family:var(--display)}
+  .row2{display:flex;gap:10px}
+  .row2>*{flex:1}
+  /* ---- list items ---- */
+  .item{
+    display:flex;align-items:center;gap:12px;padding:12px 0;
+    border-top:1px solid var(--line);
+  }
+  .item:first-child{border-top:none}
+  .item .body{flex:1;min-width:0}
+  .item .name{font-weight:600;font-size:15px}
+  .item .sub{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px}
+  .setline{font-family:var(--mono);font-size:13px;color:var(--ink);margin-top:6px;display:flex;flex-wrap:wrap;gap:6px}
+  .setpill{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:2px 7px;font-size:12px}
+  .setpill b{color:var(--accent)}
+  .exercise-block{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+  .exercise-block:first-child{border-top:none;padding-top:0;margin-top:0}
+  .exercise-head{display:flex;align-items:center;justify-content:space-between}
+  .set-add{display:flex;gap:8px;margin-top:8px}
+  .set-add input{padding:8px 10px;font-size:14px}
+  /* macros */
+  .macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+  .macro{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:10px 4px}
+  .macro .mv{font-family:var(--mono);font-weight:700;font-size:18px}
+  .macro .ml{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+  .macro.kcal .mv{color:var(--accent)}
+  .macro.p .mv{color:var(--good)}
+  .macro.c .mv{color:var(--blue)}
+  .macro.f .mv{color:#B8862B}
+  /* empty */
+  .empty{text-align:center;color:var(--muted);padding:30px 16px;font-size:14px}
+  .empty .big{font-size:32px;margin-bottom:6px;opacity:.5}
+  /* chart */
+  .chart-wrap{margin:4px -4px 0}
+  svg.chart{display:block;width:100%;height:150px;overflow:visible}
+  .chart-dot{fill:var(--surface);stroke:var(--blue);stroke-width:2}
+  .chart-line{fill:none;stroke:var(--blue);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+  .chart-lbl{font-family:var(--mono);font-size:10px;fill:var(--muted)}
+  /* nav */
+  nav{
+    position:fixed;bottom:0;left:0;right:0;z-index:20;
+    max-width:460px;margin:0 auto;
+    background:rgba(251,250,247,.92);backdrop-filter:blur(12px);
+    border-top:1px solid var(--line);
+    display:flex;padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+  }
+  .tab{
+    flex:1;background:transparent;display:flex;flex-direction:column;
+    align-items:center;gap:3px;padding:6px 2px;color:var(--muted);
+    font-size:10px;font-weight:600;letter-spacing:.02em;border-radius:12px;
+  }
+  .tab svg{width:22px;height:22px;stroke:currentColor;stroke-width:2;fill:none}
+  .tab.on{color:var(--accent)}
+  .tab.on svg{stroke:var(--accent)}
+  /* sheet / modal */
+  .scrim{position:fixed;inset:0;background:rgba(23,25,31,.35);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .sheet{
+    position:fixed;left:0;right:0;bottom:0;z-index:31;max-width:460px;margin:0 auto;
+    background:var(--surface);border-radius:22px 22px 0 0;
+    padding:8px 20px calc(24px + env(safe-area-inset-bottom));
+    transform:translateY(100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);
+    box-shadow:0 -8px 40px rgba(23,25,31,.15);max-height:88vh;overflow:auto;
+  }
+  .sheet.show{transform:translateY(0)}
+  .grip{width:38px;height:4px;background:var(--line);border-radius:100px;margin:8px auto 14px}
+  .sheet h2{font-size:20px;margin:0 0 16px;font-weight:700}
+  .hint{font-size:12px;color:var(--muted);margin:-6px 0 14px;font-family:var(--mono)}
+  .loading{padding:60px 20px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:13px}
+  .toast{
+    position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;padding:10px 16px;border-radius:100px;font-size:13px;
+    z-index:50;opacity:0;transition:all .25s;pointer-events:none;box-shadow:var(--shadow);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* picker */
+  .picker-search{margin-bottom:14px;font-family:var(--display)}
+  .pick-group{margin-bottom:16px}
+  .pick-group h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 8px}
+  .pick{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);
+    border-radius:11px;padding:12px;margin-bottom:7px;font-size:15px;font-weight:500;color:var(--ink)}
+  .pick:active{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  /* scanner */
+  .cam-wrap{display:none;position:relative;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:4/3;margin-bottom:8px}
+  .cam-wrap.on{display:block}
+  .cam-wrap video{width:100%;height:100%;object-fit:cover}
+  .cam-frame{position:absolute;inset:26% 12%;border:2px solid rgba(255,255,255,.9);border-radius:10px}
+  .trybc{color:var(--accent);cursor:pointer;font-family:var(--mono)}
+  .scan-hit,.scan-miss{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:14px;background:var(--bg)}
+  .scan-hit .name{font-weight:600;font-size:15px}
+  .scan-hit .sub{font-size:12px;color:var(--muted);margin-top:3px}
+  .scan-miss{color:var(--muted);font-size:14px}
+  /* mine øvelser række */
+  .pick-row{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+  .pick-row .pick{margin-bottom:0}
+  /* vægt delta i historik */
+  .wdelta{font-size:12px;font-weight:700;margin-left:4px}
+  .wdelta.down{color:var(--good)}.wdelta.up{color:var(--accent)}
+  /* mål-bjælker */
+  .goalbar{margin-bottom:12px}
+  .goalbar:last-child{margin-bottom:0}
+  .goalbar-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
+  .goalbar-top .num{font-size:12px}
+  .track{height:8px;background:var(--bg);border:1px solid var(--line);border-radius:100px;overflow:hidden}
+  .fill{height:100%;border-radius:100px;transition:width .4s ease}
+</style>
+
+<div class="app" id="app">
+  <div class="loading" id="boot">Indlæser din data…</div>
+</div>
+
+<div class="scrim" id="scrim" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<nav id="nav" style="display:none">
+  <button class="tab on" data-tab="home" onclick="go('home')">
+    <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Overblik</button>
+  <button class="tab" data-tab="train" onclick="go('train')">
+    <svg viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><path d="M4 8l2-2 2 2-2 2z"/><path d="M16 20l2-2 2-2-2-2-2 2z"/><path d="M2 12l2 2"/><path d="M20 12l2-2"/></svg>Træning</button>
+  <button class="tab" data-tab="weight" onclick="go('weight')">
+    <svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M12 4v6"/><circle cx="12" cy="13" r="3"/></svg>Vægt</button>
+  <button class="tab" data-tab="food" onclick="go('food')">
+    <svg viewBox="0 0 24 24"><path d="M5 3v7a3 3 0 006 0V3"/><path d="M8 3v18"/><path d="M17 3c-1.5 0-2.5 2-2.5 5s1 4 2.5 4v9"/></svg>Kost</button>
+</nav>
+
+<script>
+/* ---------- storage ----------
+   Gemmer i telefonens/browserens eget lager (localStorage), så data bliver
+   liggende på din enhed når du hoster siden selv. Falder tilbage til Claudes
+   lager i forhåndsvisningen, og til hukommelse hvis intet er tilgængeligt. */
+const store = (function(){
+  let mode='memory'; const mem={};
+  try{ const k='__lofttest'; localStorage.setItem(k,'1'); localStorage.removeItem(k); mode='local'; }
+  catch(e){ if(typeof window!=='undefined' && window.storage) mode='claude'; }
+  return {
+    mode,
+    async get(key){
+      if(mode==='local'){ const v=localStorage.getItem(key); return v==null?null:{value:v}; }
+      if(mode==='claude'){ try{ return await window.storage.get(key); }catch(e){ return null; } }
+      return (key in mem) ? {value:mem[key]} : null;
+    },
+    async set(key,value){
+      if(mode==='local'){ localStorage.setItem(key,value); return; }
+      if(mode==='claude'){ try{ await window.storage.set(key,value); }catch(e){} return; }
+      mem[key]=value;
+    }
+  };
+})();
+async function load(key, fallback){
+  try{ const r = await store.get(key); return r ? JSON.parse(r.value) : fallback; }
+  catch(e){ return fallback; }
+}
+async function save(key, val){
+  try{ await store.set(key, JSON.stringify(val)); }
+  catch(e){ console.error('save fejl', e); }
+}
+
+/* ---------- state ---------- */
+let state = { workouts:[], weights:[], foods:[], customExercises:[], settings:{kcalGoal:0, proteinGoal:0} };
+let view = 'home';
+
+const todayKey = () => new Date().toISOString().slice(0,10);
+const fmtDate = (iso) => {
+  const d = new Date(iso+'T00:00');
+  const days=['søn','man','tir','ons','tor','fre','lør'];
+  const mon=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+  return `${days[d.getDay()]}. ${d.getDate()}. ${mon[d.getMonth()]}`;
+};
+const uid = () => Math.random().toString(36).slice(2,9);
+
+/* ---------- øvelsesbibliotek ---------- */
+const EXERCISE_LIB = {
+  'Bryst':['Bænkpres','Skråbænk med stang','Fladbænk håndvægt','Dips','Flues','Push-ups','Cable crossover'],
+  'Ryg':['Dødløft','Pull-ups','Nedtræk (lat pulldown)','Roning med stang','Roning håndvægt','T-bar roning','Face pull'],
+  'Ben':['Squat','Frontsquat','Benpres','Udfald (lunges)','Rumænsk dødløft','Lægpres','Benspark','Hasekøl (leg curl)'],
+  'Skuldre':['Militærpres','Skulderpres håndvægt','Sidehævninger','Frontal hævninger','Reverse flues','Arnold press'],
+  'Arme':['Bicepscurl håndvægt','Hammercurl','Stang-curl','Triceps pushdown','Triceps extension','Skullcrusher','Preacher curl'],
+  'Core':['Planke','Crunches','Hængende benløft','Russian twist','Ab wheel','Cable crunch'],
+};
+
+/* ---------- boot ---------- */
+(async function(){
+  state.workouts = await load('workouts', []);
+  state.weights  = await load('weights', []);
+  state.foods    = await load('foods', []);
+  state.customExercises = await load('customExercises', []);
+  state.settings = await load('settings', {kcalGoal:0, proteinGoal:0});
+  document.getElementById('nav').style.display='flex';
+  render();
+})();
+
+/* ---------- service worker (offline) ---------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+
+/* ---------- navigation ---------- */
+function go(v){
+  view=v;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on', t.dataset.tab===v));
+  render();
+  window.scrollTo(0,0);
+}
+
+/* ---------- render ---------- */
+function render(){
+  const app=document.getElementById('app');
+  if(view==='home')  app.innerHTML=renderHome();
+  if(view==='train') app.innerHTML=renderTrain();
+  if(view==='weight')app.innerHTML=renderWeight();
+  if(view==='food')  app.innerHTML=renderFood();
+}
+
+/* ===== HOME / overblik ===== */
+function renderHome(){
+  const lastWeight = state.weights.length ? [...state.weights].sort((a,b)=>a.date<b.date?1:-1)[0] : null;
+  const sorted=[...state.weights].sort((a,b)=>a.date<b.date?1:-1);
+  let delta='';
+  if(sorted.length>=2){
+    const d=(sorted[0].kg - sorted[1].kg);
+    const cls = d<0?'down':'up';
+    delta=`<div class="delta ${cls} num">${d>0?'+':''}${d.toFixed(1)} kg</div>`;
+  }
+  const today = todayKey();
+  const todayFood = state.foods.filter(f=>f.date===today);
+  const kcal = todayFood.reduce((s,f)=>s+ +f.kcal,0);
+  const workoutsThisWeek = countWeek(state.workouts.map(w=>w.date));
+  const lastWorkout = state.workouts.length ? [...state.workouts].sort((a,b)=>a.date<b.date?1:-1)[0] : null;
+
+  return `
+  <header>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <p class="eyebrow">God træning</p>
+        <h1>Overblik</h1>
+      </div>
+      <button class="icon-btn" style="font-size:20px" onclick="openSettingsSheet()" aria-label="Indstillinger">⚙️</button>
+    </div>
+    <span class="date-pill">📅 ${fmtDate(today)}</span>
+  </header>
+  <main>
+    <div class="card">
+      <div class="stat-row">
+        <div class="stat">
+          <div class="big num">${lastWeight?lastWeight.kg.toFixed(1):'–'}</div>
+          <div class="lbl">Vægt (kg)</div>
+          ${delta}
+        </div>
+        <div class="stat">
+          <div class="big num">${kcal||0}</div>
+          <div class="lbl">${state.settings.kcalGoal?('af '+state.settings.kcalGoal+' kcal'):'Kalorier i dag'}</div>
+        </div>
+        <div class="stat">
+          <div class="big num">${workoutsThisWeek}</div>
+          <div class="lbl">Træning / uge</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-lead"><span class="card-title">Seneste træning</span></div>
+      ${ lastWorkout ? `
+        <div class="item" style="padding-top:0">
+          <div class="body">
+            <div class="name">${fmtDate(lastWorkout.date)}</div>
+            <div class="sub">${lastWorkout.exercises.length} øvelser · ${totalSets(lastWorkout)} sæt</div>
+          </div>
+          <button class="btn ghost sm" onclick="go('train')">Åbn</button>
+        </div>` : `<div class="empty"><div class="big">🏋️</div>Ingen træning endnu.<br>Start din første session.</div>`}
+      <button class="btn accent" style="margin-top:8px" onclick="go('train')">Til træningslog</button>
+    </div>
+
+    <div class="card">
+      <div class="card-lead"><span class="card-title">I dag har du spist</span></div>
+      ${ todayFood.length ? macroSummary(todayFood) :
+         `<div class="empty" style="padding:18px"><div class="big">🍽️</div>Intet registreret i dag.</div>`}
+      ${ goalProgress(todayFood) }
+      <button class="btn ghost" style="margin-top:12px" onclick="go('food')">Registrér måltid</button>
+    </div>
+  </main>`;
+}
+function countWeek(dates){
+  const now=new Date(); const day=(now.getDay()+6)%7;
+  const monday=new Date(now); monday.setDate(now.getDate()-day); monday.setHours(0,0,0,0);
+  return dates.filter(d=> new Date(d+'T00:00')>=monday).length;
+}
+function totalSets(w){ return w.exercises.reduce((s,e)=>s+e.sets.length,0); }
+
+/* ===== TRÆNING ===== */
+function renderTrain(){
+  const sorted=[...state.workouts].sort((a,b)=>a.date<b.date?1:-1);
+  return `
+  <header>
+    <p class="eyebrow">Løft & log</p>
+    <h1>Træning</h1>
+  </header>
+  <main>
+    <button class="btn accent" onclick="openWorkoutSheet()">+ Ny session</button>
+    <div style="height:14px"></div>
+    ${ sorted.length ? sorted.map(renderWorkoutCard).join('') :
+       `<div class="card"><div class="empty"><div class="big">🏋️</div>Ingen sessioner endnu.<br>Tryk “Ny session” for at komme i gang.</div></div>`}
+  </main>`;
+}
+function renderWorkoutCard(w){
+  return `
+  <div class="card">
+    <div class="card-lead">
+      <span class="card-title">${fmtDate(w.date)}</span>
+      <button class="icon-btn" onclick="delWorkout('${w.id}')">🗑</button>
+    </div>
+    ${ w.exercises.length ? w.exercises.map(ex=>renderExercise(w.id,ex)).join('')
+       : `<div class="hint" style="margin:0">Ingen øvelser tilføjet endnu.</div>`}
+    <button class="btn ghost sm" style="margin-top:14px" onclick="openExerciseSheet('${w.id}')">+ Tilføj øvelse</button>
+  </div>`;
+}
+function renderExercise(wid,ex){
+  const sets = ex.sets.map((s,i)=>`<span class="setpill">${i+1}: <b>${s.weight}</b>kg × ${s.reps}</span>`).join('');
+  const best = ex.sets.length ? Math.max(...ex.sets.map(s=>+s.weight)) : 0;
+  return `
+  <div class="exercise-block">
+    <div class="exercise-head">
+      <div>
+        <div class="name">${ex.name}</div>
+        <div class="sub">${ex.sets.length} sæt · tungeste ${best} kg</div>
+      </div>
+      <button class="icon-btn" onclick="delExercise('${wid}','${ex.id}')">✕</button>
+    </div>
+    <div class="setline">${sets||'<span class="hint" style="margin:0">Ingen sæt endnu</span>'}</div>
+    <div class="set-add">
+      <input id="w_${ex.id}" inputmode="decimal" placeholder="kg">
+      <input id="r_${ex.id}" inputmode="numeric" placeholder="gent.">
+      <button class="btn sm" onclick="addSet('${wid}','${ex.id}')">+ Sæt</button>
+    </div>
+  </div>`;
+}
+
+/* ===== VÆGT ===== */
+function renderWeight(){
+  const sorted=[...state.weights].sort((a,b)=>a.date<b.date?1:-1); // nyeste først
+  const chrono=sorted.slice().reverse();                          // ældste først
+  const latest=sorted[0];
+  let deltaHtml='';
+  if(sorted.length>=2){
+    const d=sorted[0].kg-sorted[1].kg;
+    deltaHtml=`<div class="delta ${d<0?'down':'up'} num">${d>0?'+':''}${d.toFixed(1)} kg siden sidst</div>`;
+  }
+  let statRow='';
+  if(sorted.length>=2){
+    const first=chrono[0].kg, now=latest.kg;
+    const total=now-first;
+    const lowest=Math.min(...sorted.map(w=>w.kg));
+    statRow=`<div class="stat-row" style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">
+      <div class="stat"><div class="big num" style="font-size:20px">${first.toFixed(1)}</div><div class="lbl">Start</div></div>
+      <div class="stat"><div class="big num ${total<0?'':''}" style="font-size:20px;color:${total<0?'var(--good)':'var(--accent)'}">${total>0?'+':''}${total.toFixed(1)}</div><div class="lbl">Ændring i alt</div></div>
+      <div class="stat"><div class="big num" style="font-size:20px">${lowest.toFixed(1)}</div><div class="lbl">Laveste</div></div>
+    </div>`;
+  }
+  return `
+  <header>
+    <p class="eyebrow">Kropsvægt</p>
+    <h1>Vægt</h1>
+  </header>
+  <main>
+    <div class="card">
+      <div class="stat" style="text-align:center">
+        <div class="big num" style="font-size:44px">${latest?latest.kg.toFixed(1):'–'}<span style="font-size:18px;color:var(--muted)"> kg</span></div>
+        <div class="lbl">${latest?'senest '+fmtDate(latest.date):'ingen målinger endnu'}</div>
+        ${deltaHtml}
+      </div>
+      ${ sorted.length>=2 ? `<div class="chart-wrap">${lineChart(chrono)}</div>`:'' }
+      ${statRow}
+    </div>
+
+    <div class="card">
+      <div class="row2">
+        <label class="field" style="margin:0"><span class="k">Vægt (kg)</span>
+          <input id="wt_kg" inputmode="decimal" placeholder="fx 82.4"></label>
+        <label class="field" style="margin:0"><span class="k">Dato</span>
+          <input id="wt_date" type="date" value="${todayKey()}"></label>
+      </div>
+      <button class="btn accent" style="margin-top:14px" onclick="addWeight()">Registrér vægt</button>
+    </div>
+
+    ${ sorted.length ? `<div class="card">
+      <div class="card-lead"><span class="card-title">Historik</span></div>
+      ${sorted.map((w,i)=>{
+        const prev=sorted[i+1];
+        let dtag='';
+        if(prev){ const d=w.kg-prev.kg; dtag=`<span class="wdelta ${d<0?'down':d>0?'up':''} num">${d>0?'+':''}${d.toFixed(1)}</span>`; }
+        return `<div class="item">
+          <div class="body"><div class="name num">${w.kg.toFixed(1)} kg ${dtag}</div>
+          <div class="sub">${fmtDate(w.date)}</div></div>
+          <button class="icon-btn" onclick="delWeight('${w.id}')">🗑</button></div>`;
+      }).join('')}
+    </div>`:''}
+  </main>`;
+}
+function lineChart(pts){
+  const W=380,H=140,pad=24;
+  const kgs=pts.map(p=>p.kg);
+  const min=Math.min(...kgs), max=Math.max(...kgs);
+  const range=(max-min)||1;
+  const x=i=> pad + i*( (W-pad*2)/Math.max(1,pts.length-1) );
+  const y=v=> pad + (1-(v-min)/range)*(H-pad*2);
+  const d=pts.map((p,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(p.kg).toFixed(1)}`).join(' ');
+  const dots=pts.map((p,i)=>`<circle class="chart-dot" cx="${x(i).toFixed(1)}" cy="${y(p.kg).toFixed(1)}" r="3.5"/>`).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <path class="chart-line" d="${d}"/>${dots}
+    <text class="chart-lbl" x="2" y="${y(max)-6}">${max.toFixed(1)}</text>
+    <text class="chart-lbl" x="2" y="${y(min)+12}">${min.toFixed(1)}</text>
+  </svg>`;
+}
+
+/* ===== KOST ===== */
+function renderFood(){
+  const today=todayKey();
+  const todayFood=state.foods.filter(f=>f.date===today);
+  return `
+  <header>
+    <p class="eyebrow">Kost & makroer</p>
+    <h1>Kost</h1>
+    <span class="date-pill">📅 ${fmtDate(today)}</span>
+  </header>
+  <main>
+    <div class="card">
+      <div class="card-lead"><span class="card-title">I dag i alt</span>
+        <button class="btn ghost sm" onclick="openGoalSheet()">🎯 Mål</button></div>
+      ${ todayFood.length ? macroSummary(todayFood) : `<div class="empty"><div class="big">🍽️</div>Intet registreret endnu i dag.</div>`}
+      ${ goalProgress(todayFood) }
+    </div>
+
+    <div class="card">
+      <button class="btn ghost" style="margin-bottom:14px" onclick="openScanSheet()">📷  Scan stregkode</button>
+      <label class="field"><span class="k">Fødevare / måltid</span>
+        <input id="f_name" type="text" placeholder="fx Kylling & ris"></label>
+      <div class="row2">
+        <label class="field"><span class="k">Kalorier</span><input id="f_kcal" inputmode="numeric" placeholder="kcal"></label>
+        <label class="field"><span class="k">Protein (g)</span><input id="f_p" inputmode="numeric" placeholder="g"></label>
+      </div>
+      <div class="row2">
+        <label class="field"><span class="k">Kulhydrat (g)</span><input id="f_c" inputmode="numeric" placeholder="g"></label>
+        <label class="field"><span class="k">Fedt (g)</span><input id="f_f" inputmode="numeric" placeholder="g"></label>
+      </div>
+      <button class="btn accent" onclick="addFood()">Tilføj til i dag</button>
+    </div>
+
+    ${ todayFood.length ? `<div class="card">
+      <div class="card-lead"><span class="card-title">Dagens måltider</span></div>
+      ${todayFood.map(f=>`<div class="item">
+        <div class="body"><div class="name">${f.name}</div>
+        <div class="sub">${f.kcal} kcal · P${f.protein} K${f.carbs} F${f.fat}</div></div>
+        <button class="icon-btn" onclick="delFood('${f.id}')">🗑</button></div>`).join('')}
+    </div>`:''}
+  </main>`;
+}
+function macroSummary(list){
+  const sum=k=>list.reduce((s,f)=>s+ +f[k],0);
+  return `<div class="macro-grid">
+    <div class="macro kcal"><div class="mv">${sum('kcal')}</div><div class="ml">kcal</div></div>
+    <div class="macro p"><div class="mv">${sum('protein')}</div><div class="ml">protein</div></div>
+    <div class="macro c"><div class="mv">${sum('carbs')}</div><div class="ml">kulhydr.</div></div>
+    <div class="macro f"><div class="mv">${sum('fat')}</div><div class="ml">fedt</div></div>
+  </div>`;
+}
+function bar(label,val,goal,unit,color){
+  const pct=Math.min(100, Math.round(val/goal*100));
+  const over=val>goal;
+  const left=goal-val;
+  return `<div class="goalbar">
+    <div class="goalbar-top"><span>${label}</span>
+      <span class="num">${val} / ${goal} ${unit} ${over?`<b style="color:var(--accent)">+${Math.abs(left)}</b>`:`<span style="color:var(--muted)">(${left} tilbage)</span>`}</span></div>
+    <div class="track"><div class="fill" style="width:${pct}%;background:${over?'var(--accent)':color}"></div></div>
+  </div>`;
+}
+function goalProgress(list){
+  const g=state.settings; if(!g.kcalGoal && !g.proteinGoal) return '';
+  const kcal=list.reduce((s,f)=>s+ +f.kcal,0);
+  const prot=list.reduce((s,f)=>s+ +f.protein,0);
+  let out='<div style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">';
+  if(g.kcalGoal) out+=bar('Kalorier',kcal,g.kcalGoal,'kcal','var(--accent)');
+  if(g.proteinGoal) out+=bar('Protein',prot,g.proteinGoal,'g','var(--good)');
+  return out+'</div>';
+}
+function openGoalSheet(){
+  const g=state.settings;
+  openSheet(`<h2>Dagligt mål</h2>
+    <p class="hint">Sæt dine mål, så viser appen hvor langt du er hver dag. Lad felter stå tomme for at slå et mål fra.</p>
+    <label class="field"><span class="k">Kalorier (kcal)</span>
+      <input id="g_kcal" inputmode="numeric" value="${g.kcalGoal||''}" placeholder="fx 2200"></label>
+    <label class="field"><span class="k">Protein (g)</span>
+      <input id="g_prot" inputmode="numeric" value="${g.proteinGoal||''}" placeholder="fx 150"></label>
+    <button class="btn accent" onclick="saveGoals()">Gem mål</button>`);
+}
+async function saveGoals(){
+  state.settings={
+    kcalGoal:+document.getElementById('g_kcal').value||0,
+    proteinGoal:+document.getElementById('g_prot').value||0
+  };
+  await save('settings',state.settings); closeSheet(); render(); toast('Mål gemt');
+}
+
+/* ---------- actions: workout ---------- */
+function openWorkoutSheet(){
+  openSheet(`<h2>Ny træningssession</h2>
+    <label class="field"><span class="k">Dato</span><input id="nw_date" type="date" value="${todayKey()}"></label>
+    <button class="btn accent" onclick="createWorkout()">Opret session</button>`);
+}
+async function createWorkout(){
+  const date=document.getElementById('nw_date').value||todayKey();
+  state.workouts.push({id:uid(),date,exercises:[]});
+  await save('workouts',state.workouts); closeSheet(); go('train'); toast('Session oprettet');
+}
+async function delWorkout(id){
+  state.workouts=state.workouts.filter(w=>w.id!==id);
+  await save('workouts',state.workouts); render(); toast('Session slettet');
+}
+function openExerciseSheet(wid){
+  const mine = state.customExercises.length ? `
+    <div class="pick-group" data-group>
+      <h4>Mine øvelser</h4>
+      ${state.customExercises.map(name=>`<div class="pick-row">
+        <button class="pick" data-name="${name.toLowerCase()}" style="flex:1" onclick="createExercise('${wid}','${name.replace(/'/g,"\\'")}')">${name}</button>
+        <button class="icon-btn" onclick="delCustom('${name.replace(/'/g,"\\'")}','${wid}')">🗑</button>
+      </div>`).join('')}
+    </div>` : '';
+  const groups=Object.entries(EXERCISE_LIB).map(([g,list])=>`
+    <div class="pick-group" data-group>
+      <h4>${g}</h4>
+      ${list.map(name=>`<button class="pick" data-name="${name.toLowerCase()}" onclick="createExercise('${wid}','${name.replace(/'/g,"\\'")}')">${name}</button>`).join('')}
+    </div>`).join('');
+  openSheet(`<h2>Vælg øvelse</h2>
+    <p class="hint">Vælg fra biblioteket — eller tilføj din egen, så husker den den til næste gang.</p>
+    <input class="picker-search" id="pick_search" type="text" placeholder="🔍  Søg øvelse…" oninput="filterPicker()">
+    <div id="pick_list">${mine}${groups}</div>
+    <div class="pick-group" style="border-top:1px solid var(--line);padding-top:14px">
+      <h4>Ny egen øvelse</h4>
+      <div class="row2">
+        <input id="ex_custom" type="text" placeholder="Navn på øvelse">
+        <button class="btn sm" onclick="createCustom('${wid}')">Gem & tilføj</button>
+      </div>
+    </div>`);
+}
+function filterPicker(){
+  const q=(document.getElementById('pick_search').value||'').toLowerCase().trim();
+  document.querySelectorAll('#pick_list .pick').forEach(b=>{ b.style.display=b.dataset.name.includes(q)?'':'none'; });
+  document.querySelectorAll('#pick_list [data-group]').forEach(g=>{
+    const any=[...g.querySelectorAll('.pick')].some(b=>b.style.display!=='none');
+    g.style.display=any?'':'none';
+  });
+}
+async function createExercise(wid,name){
+  const w=state.workouts.find(x=>x.id===wid);
+  w.exercises.push({id:uid(),name,sets:[]});
+  await save('workouts',state.workouts); closeSheet(); render(); toast(name+' tilføjet');
+}
+async function createCustom(wid){
+  const name=(document.getElementById('ex_custom').value||'').trim();
+  if(!name){ toast('Skriv et navn'); return; }
+  const known = state.customExercises.some(n=>n.toLowerCase()===name.toLowerCase())
+    || Object.values(EXERCISE_LIB).flat().some(n=>n.toLowerCase()===name.toLowerCase());
+  if(!known){ state.customExercises.push(name); await save('customExercises',state.customExercises); }
+  createExercise(wid,name);
+}
+async function delCustom(name,wid){
+  state.customExercises=state.customExercises.filter(n=>n!==name);
+  await save('customExercises',state.customExercises);
+  openExerciseSheet(wid); // genindlæs arket
+  toast('Fjernet fra mine øvelser');
+}
+async function delExercise(wid,eid){
+  const w=state.workouts.find(x=>x.id===wid);
+  w.exercises=w.exercises.filter(e=>e.id!==eid);
+  await save('workouts',state.workouts); render();
+}
+async function addSet(wid,eid){
+  const wi=document.getElementById('w_'+eid), ri=document.getElementById('r_'+eid);
+  const weight=wi.value.trim(), reps=ri.value.trim();
+  if(!weight||!reps){ toast('Udfyld kg og gentagelser'); return; }
+  const w=state.workouts.find(x=>x.id===wid);
+  const ex=w.exercises.find(e=>e.id===eid);
+  ex.sets.push({weight,reps});
+  await save('workouts',state.workouts); render(); toast('Sæt logget');
+}
+
+/* ---------- actions: weight ---------- */
+async function addWeight(){
+  const kg=parseFloat(document.getElementById('wt_kg').value);
+  const date=document.getElementById('wt_date').value||todayKey();
+  if(!kg||kg<=0){ toast('Indtast en gyldig vægt'); return; }
+  state.weights=state.weights.filter(w=>w.date!==date); // én pr. dag
+  state.weights.push({id:uid(),date,kg});
+  await save('weights',state.weights); render(); toast('Vægt registreret');
+}
+async function delWeight(id){
+  state.weights=state.weights.filter(w=>w.id!==id);
+  await save('weights',state.weights); render();
+}
+
+/* ---------- actions: food ---------- */
+async function addFood(){
+  const g=id=>document.getElementById(id);
+  const name=(g('f_name').value||'').trim();
+  if(!name){ toast('Skriv hvad du spiste'); return; }
+  const food={id:uid(),date:todayKey(),name,
+    kcal:+g('f_kcal').value||0, protein:+g('f_p').value||0,
+    carbs:+g('f_c').value||0, fat:+g('f_f').value||0};
+  state.foods.push(food);
+  await save('foods',state.foods); render(); toast('Måltid tilføjet');
+}
+async function delFood(id){
+  state.foods=state.foods.filter(f=>f.id!==id);
+  await save('foods',state.foods); render();
+}
+
+/* ---------- stregkode-scanning + opslag ---------- */
+let scanStream=null, scanTimer=null, scanProduct=null;
+function openScanSheet(){
+  openSheet(`<h2>Scan stregkode</h2>
+    <p class="hint">Scan med kameraet, eller indtast koden — så henter vi navn og næringsindhold.</p>
+    <div id="cam_wrap" class="cam-wrap"><video id="cam" playsinline muted></video><div class="cam-frame"></div></div>
+    <div id="scan_status" class="hint" style="margin:6px 0 12px"></div>
+    <label class="field"><span class="k">Stregkode (EAN / UPC)</span>
+      <input id="bc_input" inputmode="numeric" placeholder="fx 3017624010701"></label>
+    <button class="btn accent" onclick="lookupBarcode(document.getElementById('bc_input').value)">Slå op</button>
+    <p class="hint" style="margin-top:12px">Prøv:
+      <b class="trybc" onclick="lookupBarcode('3017624010701')">3017624010701</b> ·
+      <b class="trybc" onclick="lookupBarcode('5000159407236')">5000159407236</b></p>
+    <div id="scan_result"></div>`);
+  startCamera();
+}
+async function startCamera(){
+  const status=document.getElementById('scan_status');
+  if(!('BarcodeDetector' in window)){
+    status.textContent='Live-scanning virker i den færdige app. Her i demoen: indtast koden manuelt.'; return;
+  }
+  try{
+    scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const v=document.getElementById('cam'); v.srcObject=scanStream; await v.play();
+    document.getElementById('cam_wrap').classList.add('on');
+    const det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']});
+    status.textContent='Hold stregkoden inden for rammen…';
+    scanTimer=setInterval(async()=>{
+      try{ const codes=await det.detect(v);
+        if(codes.length){ const c=codes[0].rawValue; stopCamera();
+          const inp=document.getElementById('bc_input'); if(inp)inp.value=c; lookupBarcode(c); }
+      }catch(e){}
+    },500);
+  }catch(e){
+    status.textContent='Kameraet er blokeret i dette forhåndsvisnings-vindue — indtast koden manuelt, så virker opslaget fint.';
+  }
+}
+function stopCamera(){
+  if(scanTimer){clearInterval(scanTimer);scanTimer=null;}
+  if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null;}
+  const w=document.getElementById('cam_wrap'); if(w)w.classList.remove('on');
+}
+async function lookupBarcode(code){
+  code=(code||'').trim();
+  if(!code){ toast('Indtast en stregkode'); return; }
+  const status=document.getElementById('scan_status');
+  const res=document.getElementById('scan_result'); res.innerHTML='';
+  if(status)status.textContent='Slår op i fødevaredatabasen…';
+  try{
+    const url=`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=product_name,brands,nutriments`;
+    const r=await fetch(url);
+    const data=await r.json();
+    if(!data||data.status!==1||!data.product){
+      if(status)status.textContent='';
+      res.innerHTML=`<div class="scan-miss">Fandt ikke <b>${code}</b> i databasen (den er fælles-drevet, så nogle varer mangler). Tast værdierne manuelt i stedet.</div>`;
+      return;
+    }
+    const p=data.product, n=p.nutriments||{};
+    const per100={
+      kcal:Math.round(n['energy-kcal_100g']||n['energy-kcal']||0),
+      protein:Math.round(n['proteins_100g']||0),
+      carbs:Math.round(n['carbohydrates_100g']||0),
+      fat:Math.round(n['fat_100g']||0)
+    };
+    const name=[p.brands,p.product_name].filter(Boolean).join(' — ')||('Produkt '+code);
+    scanProduct={name,per100};
+    if(status)status.textContent='';
+    res.innerHTML=`<div class="scan-hit">
+      <div class="name">${name}</div>
+      <div class="sub num">Per 100 g: ${per100.kcal} kcal · P${per100.protein} K${per100.carbs} F${per100.fat}</div>
+      <label class="field" style="margin:12px 0 8px"><span class="k">Hvor mange gram spiste du?</span>
+        <input id="scan_grams" inputmode="numeric" value="100" oninput="updateScanCalc()"></label>
+      <div id="scan_calc" class="macro-grid"></div>
+      <button class="btn accent" style="margin-top:12px" onclick="addScannedFood()">Tilføj til i dag</button>
+    </div>`;
+    updateScanCalc();
+  }catch(e){
+    if(status)status.textContent='';
+    res.innerHTML=`<div class="scan-miss">Kunne ikke hente data lige nu — det kan være netværket i forhåndsvisningen. Tast værdierne manuelt.</div>`;
+  }
+}
+function scaledScan(){
+  const g=+(document.getElementById('scan_grams')||{}).value||0;
+  const p=scanProduct.per100, f=g/100;
+  return {kcal:Math.round(p.kcal*f),protein:Math.round(p.protein*f),carbs:Math.round(p.carbs*f),fat:Math.round(p.fat*f)};
+}
+function updateScanCalc(){
+  const s=scaledScan();
+  document.getElementById('scan_calc').innerHTML=`
+    <div class="macro kcal"><div class="mv">${s.kcal}</div><div class="ml">kcal</div></div>
+    <div class="macro p"><div class="mv">${s.protein}</div><div class="ml">protein</div></div>
+    <div class="macro c"><div class="mv">${s.carbs}</div><div class="ml">kulhydr.</div></div>
+    <div class="macro f"><div class="mv">${s.fat}</div><div class="ml">fedt</div></div>`;
+}
+async function addScannedFood(){
+  const s=scaledScan(), g=+document.getElementById('scan_grams').value||0;
+  state.foods.push({id:uid(),date:todayKey(),name:`${scanProduct.name} (${g} g)`,...s});
+  await save('foods',state.foods); closeSheet(); render(); toast('Måltid tilføjet');
+}
+
+/* ---------- indstillinger: backup / gendan ---------- */
+function openSettingsSheet(){
+  const modeTxt = store.mode==='local' ? 'på denne enhed (browserens lager)'
+    : store.mode==='claude' ? 'i forhåndsvisningen' : 'kun midlertidigt';
+  openSheet(`<h2>Data & backup</h2>
+    <p class="hint">Din data gemmes ${modeTxt}. Tag en backup jævnligt — så kan du flytte den til en ny telefon eller browser.</p>
+    <button class="btn accent" onclick="exportData()">⬇︎ Eksportér backup</button>
+    <label class="btn ghost" style="margin-top:10px;cursor:pointer">⬆︎ Gendan fra backup
+      <input type="file" accept="application/json,.json" style="display:none" onchange="importData(this)"></label>
+    <div style="border-top:1px solid var(--line);margin:18px 0 14px"></div>
+    <button class="btn ghost" style="color:var(--accent)" onclick="confirmClear()">Ryd al data</button>`);
+}
+function exportData(){
+  const dump={ _app:'loeft', _version:1, _exported:new Date().toISOString(),
+    workouts:state.workouts, weights:state.weights, foods:state.foods,
+    customExercises:state.customExercises, settings:state.settings };
+  const blob=new Blob([JSON.stringify(dump,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`loeft-backup-${todayKey()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  toast('Backup hentet');
+}
+function importData(input){
+  const file=input.files&&input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=async()=>{
+    try{
+      const d=JSON.parse(reader.result);
+      if(!d||d._app!=='loeft'){ toast('Ukendt filformat'); return; }
+      state.workouts=d.workouts||[];
+      state.weights=d.weights||[];
+      state.foods=d.foods||[];
+      state.customExercises=d.customExercises||[];
+      state.settings=d.settings||{kcalGoal:0,proteinGoal:0};
+      await save('workouts',state.workouts);
+      await save('weights',state.weights);
+      await save('foods',state.foods);
+      await save('customExercises',state.customExercises);
+      await save('settings',state.settings);
+      closeSheet(); go('home'); toast('Data gendannet');
+    }catch(e){ toast('Kunne ikke læse filen'); }
+  };
+  reader.readAsText(file);
+}
+function confirmClear(){
+  openSheet(`<h2>Ryd al data?</h2>
+    <p class="hint">Dette sletter al din træning, vægt og kost på denne enhed. Har du taget en backup, kan du altid gendanne den bagefter.</p>
+    <button class="btn" style="background:var(--accent)" onclick="clearAll()">Ja, slet alt</button>
+    <button class="btn ghost" style="margin-top:10px" onclick="openSettingsSheet()">Annullér</button>`);
+}
+async function clearAll(){
+  state.workouts=[]; state.weights=[]; state.foods=[]; state.customExercises=[];
+  state.settings={kcalGoal:0,proteinGoal:0};
+  await save('workouts',[]); await save('weights',[]); await save('foods',[]);
+  await save('customExercises',[]); await save('settings',state.settings);
+  closeSheet(); go('home'); toast('Al data ryddet');
+}
+
+/* ---------- sheet + toast ---------- */
+function openSheet(html){
+  document.getElementById('sheet').innerHTML='<div class="grip"></div>'+html;
+  document.getElementById('sheet').classList.add('show');
+  document.getElementById('scrim').classList.add('show');
+}
+function closeSheet(){
+  if(typeof stopCamera==='function') stopCamera();
+  document.getElementById('sheet').classList.remove('show');
+  document.getElementById('scrim').classList.remove('show');
+}
+let toastT;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),1800);
+}
+</script>
